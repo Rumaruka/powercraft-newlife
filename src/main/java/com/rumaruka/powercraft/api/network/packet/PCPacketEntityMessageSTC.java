@@ -2,6 +2,7 @@ package com.rumaruka.powercraft.api.network.packet;
 
 
 import com.rumaruka.powercraft.api.PCUtils;
+import com.rumaruka.powercraft.api.entity.IEntityPC;
 import com.rumaruka.powercraft.api.network.PCPacket;
 import com.rumaruka.powercraft.api.network.PCPacketServerToClient;
 import io.netty.buffer.ByteBuf;

@@ -1,6 +1,5 @@
 package com.rumaruka.powercraft.api.network.packet;
 
-import com.rumaruka.powercraft.PCSide;
 import com.rumaruka.powercraft.api.PCSide;
 import com.rumaruka.powercraft.api.network.PCPacket;
 import io.netty.buffer.ByteBuf;

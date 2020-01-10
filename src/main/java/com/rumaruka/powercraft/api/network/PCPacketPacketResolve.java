@@ -1,7 +1,6 @@
 package com.rumaruka.powercraft.api.network;
 
-import com.rumaruka.powercraft.PCSide;
-import com.rumaruka.powercraft.api.PCLogger;
+import com.rumaruka.powercraft.api.PCSide;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.INetHandler;
@@ -45,7 +44,6 @@ public class PCPacketPacketResolve extends PCPacketServerToClientBase{
 
     private static boolean checkSide(PCSide side){
         if(side!=PCSide.CLIENT){
-            PCLogger.severe("A server to client packet can't run on server");
             return false;
         }
         return true;

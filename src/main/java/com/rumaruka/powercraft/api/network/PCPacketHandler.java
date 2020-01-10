@@ -1,15 +1,12 @@
 package com.rumaruka.powercraft.api.network;
 
 
-import com.rumaruka.powercraft.PCSide;
+import com.rumaruka.powercraft.api.PCCtrlPressed;
+import com.rumaruka.powercraft.api.PCSide;
 import com.rumaruka.powercraft.PowerCraft;
-import com.rumaruka.powercraft.api.PCLogger;
 
 import com.rumaruka.powercraft.api.PCUtils;
-import com.rumaruka.powercraft.api.network.packet.PCPacketClickWindow;
-import com.rumaruka.powercraft.api.network.packet.PCPacketEntityMessageCTS;
-import com.rumaruka.powercraft.api.network.packet.PCPacketEntityMessageSTC;
-import com.rumaruka.powercraft.api.network.packet.PCPacketTileEntitySync;
+import com.rumaruka.powercraft.api.network.packet.*;
 import com.rumaruka.powercraft.api.reflect.PCReflect;
 import com.rumaruka.powercraft.api.reflect.PCSecurity;
 import io.netty.buffer.ByteBuf;
@@ -54,9 +51,9 @@ public class PCPacketHandler extends SimpleChannelInboundHandler<PCPacket> {
         if(channels==null){
             channels = NetworkRegistry.INSTANCE.newChannel("PowerCraft", new Indexer());
             FMLEmbeddedChannel channel = channels.get(Side.CLIENT);
-            channel.pipeline().addAfter(channel.findChannelHandlerNameForType(Indexer.class), PCPacketHandler.class.getName(), new PCPacketHandler(PC_Side.CLIENT));
+            channel.pipeline().addAfter(channel.findChannelHandlerNameForType(Indexer.class), PCPacketHandler.class.getName(), new PCPacketHandler(PCSide.CLIENT));
             channel = channels.get(Side.SERVER);
-            channel.pipeline().addAfter(channel.findChannelHandlerNameForType(Indexer.class), PCPacketHandler.class.getName(), new PCPacketHandler(PC_Side.SERVER));
+            channel.pipeline().addAfter(channel.findChannelHandlerNameForType(Indexer.class), PCPacketHandler.class.getName(), new PCPacketHandler(PCSide.SERVER));
             FMLCommonHandler.instance().bus().register(new Listener());
             PCPacketHandler.registerPacket(PCPacketTileEntitySync.class);
             PCPacketHandler.registerPacket(PCPacketPasswordRequest.class);
@@ -118,14 +115,12 @@ public class PCPacketHandler extends SimpleChannelInboundHandler<PCPacket> {
     public static Packet getPacketFrom(PCPacket packet){
         Packet pkt = channels.get(Side.SERVER).generatePacketFrom(packet);
         if(pkt==null){
-            PCLogger.severe("Anything went wrong");
         }
         return pkt;
     }
 
     public static void registerPacket(Class<? extends PCPacket> packet){
         if(done){
-            PCLogger.severe("A packet want to register while startup is done");
         }else{
             packetList.add(packet);
         }
@@ -157,7 +152,6 @@ public class PCPacketHandler extends SimpleChannelInboundHandler<PCPacket> {
         int id = buf.readInt();
         PCPacket packet = PCReflect.newInstance(packets[id]);
         if(packet==null){
-            PCLogger.severe("Can't create packet %s", packets[id]);
             return null;
         }
         packet.fromByteBuffer(buf);
@@ -167,7 +161,6 @@ public class PCPacketHandler extends SimpleChannelInboundHandler<PCPacket> {
     static void writePacketToByteBuf(PCPacket packet, ByteBuf buf) {
         Integer id = packetID.get(packet.getClass());
         if(id==null){
-            PCLogger.severe("YOU HAVE TO REGISTER CLASS %s", packet.getClass());
             return;
         }
         buf.writeInt(id);
@@ -233,19 +226,11 @@ public class PCPacketHandler extends SimpleChannelInboundHandler<PCPacket> {
     }
 
     private static void checkServer(PCPacket packet){
-        if(!PCUtils.isServer()){
-            PCLogger.severe("A server send not invoked form server");
-        }else if(packet instanceof PCPacketClientToServer){
-            PCLogger.severe("A server trys to send a client to server packet");
-        }
+
     }
 
     private static void checkClient(PCPacket packet){
-        if(!PCUtils.isClient()){
-            PCLogger.severe("A client send not invoked form client");
-        }else if(packet instanceof PCPacketServerToClient){
-            PCLogger.severe("A client trys to send a server to client packet");
-        }
+
     }
 
     public PCSide side;

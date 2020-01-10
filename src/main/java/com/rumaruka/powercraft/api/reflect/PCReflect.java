@@ -1,6 +1,5 @@
 package com.rumaruka.powercraft.api.reflect;
 
-import com.rumaruka.powercraft.api.PCLogger;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import java.lang.reflect.AccessibleObject;
@@ -35,7 +34,6 @@ public class PCReflect {
             if (classes.length > 3 + num) {
                 return classes[num+3];
             }
-            PCLogger.severe("Class %s has no %s callers, only %s", classes[classes.length-1], num, classes.length - 2);
             return null;
         }
 
@@ -60,7 +58,6 @@ public class PCReflect {
                     e.printStackTrace();
                 }
             }
-            PCLogger.severe("Class %s has no %s callers, only %s", stackTraceElements[0], num, stackTraceElements.length - 2);
             return null;
         }
 
@@ -108,7 +105,6 @@ public class PCReflect {
             if (max < fields.length) {
                 f = fields[max];
                 if (type.isAssignableFrom(f.getType())) {
-                    PCLogger.warning("Field in %s which should be at index %s not found, now using index %s", clasz, i, max);
                     return f;
                 }
                 max++;
@@ -116,13 +112,11 @@ public class PCReflect {
             if (min >= 0) {
                 f = fields[min];
                 if (type.isAssignableFrom(f.getType())) {
-                    PCLogger.warning("Field in %s which should be at index %s not found, now using index %s", clasz, i, min);
                     return f;
                 }
                 min--;
             }
         }
-        PCLogger.severe("Field in %s which should be at index %s not found", clasz, i);
         return null;
     }
 
@@ -287,10 +281,8 @@ public class PCReflect {
                     }
                 } catch(SecurityException se){
                     onSecurityException(se);
-                } catch(IllegalAccessException e){
-                    PCLogger.severe("Cannot access field %s.%s", c, field);
-                } catch(IllegalArgumentException e){
-                    PCLogger.severe("Wrong arguments for field %s.%s", c, field);
+                } catch(IllegalAccessException | IllegalArgumentException e){
+                        e.printStackTrace();
                 }
             }
             c = c.getSuperclass();
@@ -304,10 +296,8 @@ public class PCReflect {
         } catch (SecurityException e){
             onSecurityException(e);
         } catch (InstantiationException e) {
-            PCLogger.severe("Error while constructing %s", c);
             e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            PCLogger.severe("Cannot access constructor %s", c);
+        } catch (IllegalAccessException ignored) {
         }
         return null;
     }
@@ -330,15 +320,8 @@ public class PCReflect {
             return cc.newInstance(values);
         } catch (SecurityException e){
             onSecurityException(e);
-        } catch (InstantiationException e) {
-            PCLogger.severe("Error while constructing %s", c);
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            PCLogger.severe("Cannot access constructor %s", c);
-        } catch (NoSuchMethodException e) {
-            PCLogger.severe("Cannot find constructor %s", c);
+        } catch (IllegalAccessException | NoSuchMethodException e) {
         } catch (Exception e) {
-            PCLogger.severe("Error in constructor %s", c);
             e.printStackTrace();
         }
         return null;
@@ -347,12 +330,9 @@ public class PCReflect {
     @SuppressWarnings("unused")
     static void onSecurityException(SecurityException e){
         if(!thrownSecurityExceptionBefore){
-            PCLogger.warning("PowerCraft has no permission for reflection");
             thrownSecurityExceptionBefore = true;
         }
     }
 
-    private PCReflect() {
-        PCUtils.staticClassConstructor();
-    }
+
 }

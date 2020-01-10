@@ -11,6 +11,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.play.server.SPacketConfirmTransaction;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 
 
@@ -53,7 +54,7 @@ public class PCPacketClickWindow extends PCPacketClientToServer {
                 PCFields.NetHandlerPlayServer_field_147372_n.getValue(playServer).addKey(player.openContainer.windowId, Short.valueOf((short)this.transactionID));
                 player.connection.sendPacket(new SPacketConfirmTransaction(this.windowId, (short) this.transactionID, false));
                 player.openContainer.setCanCraft(player, false);
-                ArrayList<ItemStack> itemStacks = new ArrayList<ItemStack>();
+                NonNullList<ItemStack> itemStacks =  NonNullList.<ItemStack>create();
 
                 for (int i = 0; i < player.openContainer.inventorySlots.size(); ++i)
                 {

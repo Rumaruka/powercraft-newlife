@@ -1,10 +1,16 @@
 package com.rumaruka.powercraft.api.gres;
 
+import com.rumaruka.powercraft.PowerCraft;
 import com.rumaruka.powercraft.api.*;
-import com.rumaruka.powercraft.api.block.PCTileEntity;
+
 import com.rumaruka.powercraft.api.entity.IEntityPC;
 import com.rumaruka.powercraft.api.network.PCPacketHandler;
+import com.rumaruka.powercraft.api.network.packet.PCPacketOpenGresEntity;
+import com.rumaruka.powercraft.api.network.packet.PCPacketOpenGresHandler;
+import com.rumaruka.powercraft.api.network.packet.PCPacketOpenGresItem;
+import com.rumaruka.powercraft.api.network.packet.PCPacketOpenGresTileEntity;
 import com.rumaruka.powercraft.api.reflect.PCSecurity;
+import com.rumaruka.powercraft.api.tile.PCTileEntityAPI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
@@ -19,6 +25,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -37,7 +45,7 @@ public class PCGres {
 
 
     public static void register() {
-        PCSecurity.allowedCaller("PCGres.register()", PCApi.class);
+        PCSecurity.allowedCaller("PCGres.register()", PowerCraft.class);
         PCPacketHandler.registerPacket(PCPacketOpenGresHandler.class);
         PCPacketHandler.registerPacket(PCPacketOpenGresItem.class);
         PCPacketHandler.registerPacket(PCPacketOpenGresTileEntity.class);
@@ -45,7 +53,7 @@ public class PCGres {
     }
 
     @SideOnly(Side.CLIENT)
-    public static void openClientGui(EntityPlayer player, PCTileEntity pc_tileentiy, int windowID, NBTTagCompound tag) {
+    public static void openClientGui(EntityPlayer player, PCTileEntityAPI pc_tileentiy, int windowID, NBTTagCompound tag) {
         if (pc_tileentiy instanceof IGresGuiOpenHandler) {
             IGresGui gui = ((IGresGuiOpenHandler) pc_tileentiy).openClientGui(player, tag);
         }
@@ -95,7 +103,7 @@ public class PCGres {
 
     }
 
-    public static void openGui(EntityPlayer player, PCTileEntity tileEntity, Object... params) {
+    public static void openGui(EntityPlayer player, PCTileEntityAPI tileEntity, Object... params) {
 
         if (player instanceof EntityPlayerMP && tileEntity instanceof IGresGuiOpenHandler) {
             EntityPlayerMP playerMP = (EntityPlayerMP) player;
@@ -200,7 +208,7 @@ public class PCGres {
         final String states[] = {"loc_active", "loc_mouseOver", "loc_mouseDown", "loc_disabled"};
         IResourceManager resourceManager = PCClientUtils.mc().getResourceManager();
         try {
-            IResource resource = resourceManager.getResource(PCUtils.getResourceLocation(PCApi.instance, "textures/gui/GuiDesk.xml"));
+            IResource resource = resourceManager.getResource(PCUtils.getResourceLocation(PowerCraft.instance, "textures/gui/GuiDesk.xml"));
             InputStream inputStream = resource.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             String page = "";
@@ -219,7 +227,7 @@ public class PCGres {
                 if (texureNode.getNodeName().equals("Texture")) {
                     Element texureElement = (Element) texureNode;
                     String textureName = texureElement.getAttribute("textureName");
-                    ResourceLocation resourceLocation = PCUtils.getResourceLocation(PCApi.instance, "textures/gui/" + textureName);
+                    ResourceLocation resourceLocation = PCUtils.getResourceLocation(PowerCraft.instance, "textures/gui/" + textureName);
                     NodeList subTextureNodes = texureNode.getChildNodes();
                     for (int j = 0; j < subTextureNodes.getLength(); j++) {
                         Node subTextureNode = subTextureNodes.item(j);
@@ -233,9 +241,7 @@ public class PCGres {
                                 } catch (NumberFormatException e) {
                                     e.printStackTrace();
                                     if (k == 0) {
-                                        PCLogger.severe("Can't find activeLocation in xml");
                                     } else {
-                                        PCLogger.warning("Can't find a specific atribute in xml");
                                         others[k] = others[0];
                                     }
                                 }
@@ -245,14 +251,12 @@ public class PCGres {
                                 size = new PCVec2I(subTextureElement.getAttribute("size"));
                             } catch (NumberFormatException e) {
                                 e.printStackTrace();
-                                PCLogger.severe("Can't find size in xml");
                             }
                             PCRectI frame = null;
                             try {
                                 frame = new PCRectI(subTextureElement.getAttribute("frame"));
                             } catch (NumberFormatException e) {
                                 e.printStackTrace();
-                                PCLogger.severe("Can't find frame in xml");
                             }
                             if (name != null && size != null && frame != null && others[0] != null) {
                                 textures.put(name, new PCGresTexture(resourceLocation, size, frame, others));
@@ -261,56 +265,49 @@ public class PCGres {
                     }
                 }
             }
-        } catch (IOException | org.xml.sax.SAXException e) {
-            e.printStackTrace();
-        } catch (ParserConfigurationException e) {
+        } catch (IOException | SAXException | ParserConfigurationException e) {
             e.printStackTrace();
         }
 
 
     }
+
     @SideOnly(Side.CLIENT)
     private static List<String> warnings;
 
 
     @SideOnly(Side.CLIENT)
-    public static PCGresTexture getGresTexture(String name){
+    public static PCGresTexture getGresTexture(String name) {
         PCGresTexture tex = textures.get(name);
 
-        if(tex==null){
+        if (tex == null) {
             warnings = new ArrayList<String>();
         }
-        if(!warnings.contains(name)){
+        if (!warnings.contains(name)) {
             warnings.add(name);
-            PCLogger.warning("Can`t find textures %s",name);
         }
         return tex;
     }
 
     @SideOnly(Side.CLIENT)
-    public static IGresGui getCurrentClientGui(){
+    public static IGresGui getCurrentClientGui() {
         Minecraft mc = PCClientUtils.mc();
-        if(mc.currentScreen instanceof PCGresGuiScreen){
-            return  ((PCGresGuiScreen)mc.currentScreen).getCurrentClientGui();
+        if (mc.currentScreen instanceof PCGresGuiScreen) {
+            return ((PCGresGuiScreen) mc.currentScreen).getCurrentClientGui();
         }
         return null;
     }
 
     @SideOnly(Side.CLIENT)
-    public static <T>T getCurrentClientGui(Class<T> c){
+    public static <T> T getCurrentClientGui(Class<T> c) {
         Minecraft mc = PCClientUtils.mc();
-        if(mc.currentScreen instanceof PCGresGuiScreen){
-            IGresGui gresGui = ((PCGresGuiScreen)mc.currentScreen).getCurrentClientGui();
-            if(c.isAssignableFrom(gresGui.getClass())){
+        if (mc.currentScreen instanceof PCGresGuiScreen) {
+            IGresGui gresGui = ((PCGresGuiScreen) mc.currentScreen).getCurrentClientGui();
+            if (c.isAssignableFrom(gresGui.getClass())) {
                 return c.cast(gresGui);
             }
         }
         return null;
-    }
-
-
-    private PCGres(){
-        PCUtils.staticClassConstructor();
     }
 
 

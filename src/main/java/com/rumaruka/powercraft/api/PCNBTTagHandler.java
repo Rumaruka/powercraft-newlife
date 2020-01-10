@@ -1,7 +1,7 @@
 package com.rumaruka.powercraft.api;
 
 import com.rumaruka.powercraft.api.PCField.Flag;
-import net.minecraft.inventory.ItemStackHelper;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 
@@ -125,11 +125,9 @@ public final class PCNBTTagHandler {
                 return new NBTTagByteArray(output.toByteArray());
             } catch (IOException e) {
                 e.printStackTrace();
-                PCLogger.severe("Error while try to save object %s", value);
             }
 
         }
-        PCLogger.severe("Can't save object %s form type %s", value, c);
         return null;
     }
 
@@ -246,41 +244,14 @@ public final class PCNBTTagHandler {
                 }catch(NoSuchMethodException e){/**/}
                 Constructor<?> constr = cc.getConstructor(NBTTagCompound.class);
                 return c.cast(constr.newInstance(tag));
-            } catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException | InvocationTargetException | IllegalArgumentException | IllegalAccessException | InstantiationException | SecurityException | NoSuchMethodException e) {
                 e.printStackTrace();
-                PCLogger.severe("Can't find class %s form NBT save", cName);
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-                PCLogger.severe("Class %s need constructor %s(NBTTagCompound)", cName, cName);
-            } catch (SecurityException e) {
-                e.printStackTrace();
-                PCLogger.severe("No Permissions :(");
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-                PCLogger.severe("Class %s can't be instantionated", cName);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-                PCLogger.severe("No access to constructor %s(NBTTagCompound)", cName);
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-                PCLogger.severe("Class %s can't get NBTTagCompound as argument", cName);
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-                PCLogger.severe("Error while initialize class %s", cName);
             }
             return null;
         }else if(Enum.class.isAssignableFrom(c)){
             NBTTagCompound tag = (NBTTagCompound) base;
             String eName = tag.getString("Enum");
-            try {
-                Class<?> ec = Class.forName(eName);
-                if(Enum.class.isAssignableFrom(ec)){
-                    return c.cast(Enum.valueOf((Class<? extends Enum>)ec, tag.getString("value")));
-                }
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-            PCLogger.severe("Can't find enum %s form NBT save", eName);
+
             return null;
         }else if(Serializable.class.isAssignableFrom(c)){
             try {
@@ -289,16 +260,11 @@ public final class PCNBTTagHandler {
                 Object value = objInp.readObject();
                 objInp.close();
                 return c.cast(value);
-            } catch (IOException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
-                PCLogger.severe("Error while try to load object");
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-                PCLogger.severe("Error while try to load object, class not found");
             }
 
         }
-        PCLogger.severe("Can't load an unknown object");
         return null;
     }
 

@@ -12,6 +12,7 @@ import com.rumaruka.powercraft.api.gres.slot.PCSlot;
 import com.rumaruka.powercraft.api.gres.slot.PCSlotPhantom;
 import com.rumaruka.powercraft.api.inventory.PCInventoryUtils;
 import com.rumaruka.powercraft.api.network.PCPacketHandler;
+import com.rumaruka.powercraft.api.network.packet.PCPacketClickWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -329,7 +330,7 @@ public class PCGresGuiHandler extends PCGresContainer {
         if (this.mc.player.inventory.getItemStack() == null && this.slotOver != null){
             for (int j = 0; j < 9; ++j){
                 if (keyCode == 2 + j){
-                    sendMouseClickToServer(this.slotOver.slotNumber, j, 2);
+                    sendMouseClickToServer(this.slotOver.slotNumber, j, ClickType.CLONE);
                     return true;
                 }
             }
@@ -488,7 +489,7 @@ public class PCGresGuiHandler extends PCGresContainer {
             boolean flag = this.lastSlotOver == this.slotOver && this.lastSlotOver!=null && doubleClick && this.lastClickButton == eventButton;
             this.lastSlotOver = this.slotOver;
             if (this.slotOver!=null && this.slotOver.getHasStack() && eventButton == this.mc.gameSettings.keyBindPickBlock.getKeyCode() + 100){
-                sendMouseClickToServer(this.slotOver.slotNumber, eventButton, 3);
+                sendMouseClickToServer(this.slotOver.slotNumber, eventButton, ClickType.CLONE);
             }else if(this.slotOver!=null && this.slotOver.getHasStack()){
                 this.selectedSlots.clear();
                 this.slotClickButton = eventButton;
@@ -505,7 +506,7 @@ public class PCGresGuiHandler extends PCGresContainer {
                     this.selectedSlots.clear();
                     inventoryMouseMove(mouse, buttons);
                 }else if(this.mouseOverComponent==this){
-                    sendMouseClickToServer(-999, eventButton, 0);
+                    sendMouseClickToServer(-999, eventButton, ClickType.CLONE);
                 }
             }
         }
@@ -519,7 +520,7 @@ public class PCGresGuiHandler extends PCGresContainer {
         if(GuiScreen.isShiftKeyDown()){
             sendMouseClickToServer(this.slotOver.slotNumber, this.slotClickButton, ClickType.PICKUP);
         }else{
-            sendMouseClickToServer(this.slotOver.slotNumber, this.slotClickButton, 0);
+            sendMouseClickToServer(this.slotOver.slotNumber, this.slotClickButton, ClickType.CLONE);
         }
     }
 
@@ -541,10 +542,10 @@ public class PCGresGuiHandler extends PCGresContainer {
     private void onSlotFill(){
         if(this.takeAll){
             this.takeAll = false;
-            sendMouseClickToServer(this.lastSlotOver.slotNumber, this.slotClickButton, 6);
+            sendMouseClickToServer(this.lastSlotOver.slotNumber, this.slotClickButton, ClickType.SWAP);
         }else{
             if(this.selectedSlots.size()==1){
-                sendMouseClickToServer(this.selectedSlots.get(0).slotNumber, this.slotClickButton, 0);
+                sendMouseClickToServer(this.selectedSlots.get(0).slotNumber, this.slotClickButton, ClickType.CLONE);
             }else if(this.selectedSlots.size()>0){
                // sendMouseClickToServer(-999, Container.func_94534_d(0, this.slotClickButton), 5);
                 for(Slot slot:this.selectedSlots){
@@ -602,7 +603,7 @@ public class PCGresGuiHandler extends PCGresContainer {
         }else if(slot==this.slotOver){
             renderGray = true;
         }
-        renderGray &= slot.func_111238_b();
+      //  renderGray &= slot.getSlotTexture();
         boolean renderGrayAfter = false;
         if(slot instanceof PCSlot){
             PCSlot sSlot = (PCSlot)slot;

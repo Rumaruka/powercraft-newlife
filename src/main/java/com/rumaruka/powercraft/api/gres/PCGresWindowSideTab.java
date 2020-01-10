@@ -1,12 +1,18 @@
 package com.rumaruka.powercraft.api.gres;
 
 import com.rumaruka.powercraft.api.*;
+import com.rumaruka.powercraft.api.gres.PCGresAlign.H;
+import com.rumaruka.powercraft.api.gres.PCGresAlign.V;
 import com.rumaruka.powercraft.api.gres.events.IGresEventListener;
 import com.rumaruka.powercraft.api.gres.events.PCGresEvent;
+import com.rumaruka.powercraft.api.gres.events.PCGresMouseButtonEvent;
 import com.rumaruka.powercraft.api.gres.events.PCGresMouseMoveEvent;
 import com.rumaruka.powercraft.api.gres.history.PCGresHistory;
+import com.rumaruka.powercraft.api.gres.layot.PCGresLayoutVertical;
+import com.rumaruka.powercraft.api.inventory.ISidedInventoryPC;
 import com.rumaruka.powercraft.api.redstone.PCRedstoneWorkType;
-import com.rumaruka.powercraft.init.PCTileEntity;
+
+import com.rumaruka.powercraft.api.tile.PCTileEntityAPI;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraftforge.fml.relauncher.Side;
@@ -17,13 +23,11 @@ import java.text.DecimalFormat;
 
 @SideOnly(Side.CLIENT)
 public class PCGresWindowSideTab extends PCGresContainer {
+
     private static PCGresWindowSideTab openSideTab;
-
     private final PCVec2I size = new PCVec2I(20, 20);
-
     private final PCVec3 color = new PCVec3(1, 1, 1);
-
-    //private PCGresDisplayObject displayObject;
+    private PCGresDisplayObject displayObject;
 
     private float time;
 
@@ -98,7 +102,7 @@ public class PCGresWindowSideTab extends PCGresContainer {
         PCVec2 loc = getRealLocation();
         PCRect s = setDrawRect(scissor, new PCRect(loc.x + 20, loc.y + 2, this.rect.width - 22, 16), scale, displayHeight, zoom);
         if (s != null)
-            drawString(this.text, 20, 2, 100, 16, PCGresAlign.H.LEFT, PCGresAlign.V.CENTER, false);
+            drawString(this.text, 20, 2, 100, 16, H.LEFT, V.CENTER, false);
     }
 
     private boolean update = true;
@@ -136,6 +140,7 @@ public class PCGresWindowSideTab extends PCGresContainer {
             openSideTab = this;
         }
         return true;
+
     }
 
     private static Object getTypeDisp(PCRedstoneWorkType type) {
@@ -165,6 +170,7 @@ public class PCGresWindowSideTab extends PCGresContainer {
         if (num > 0) {
             this.time -= num * 0.01;
             if (openSideTab == this) {
+
                 this.size.setTo(this.size.add(num).min(getPrefSize().max(new PCVec2I(fontRenderer.getStringSize(this.text).x + 24, 20))));
             } else {
                 this.size.setTo(this.size.sub(num).max(20));
@@ -175,19 +181,18 @@ public class PCGresWindowSideTab extends PCGresContainer {
         }
         super.onDrawTick(timeStamp);
     }
-
-    public static PCGresWindowSideTab createRedstoneSideTab(PCTileEntity tileEntity) {
+    public static PCGresWindowSideTab createRedstoneSideTab(PCTileEntityAPI tileEntity){
         PCGresWindowSideTab sideTab = new PCGresWindowSideTab("Redstone", new PCGresDisplayObject(Items.REDSTONE));
         sideTab.setColor(new PCVec3(1.0, 0.2, 0.2));
         sideTab.setLayout(new PCGresLayoutVertical());
         PCRedstoneWorkType[] types = tileEntity.getAllowedRedstoneWorkTypes();
-        if (types == null || types.length == 0)
+        if(types==null || types.length==0)
             return null;
         Object[] disps = new Object[types.length];
         int act = 0;
-        for (int i = 0; i < types.length; i++) {
+        for(int i=0; i<types.length; i++){
             disps[i] = getTypeDisp(types[i]);
-            if (types[i] == tileEntity.getRedstoneWorkType()) {
+            if(types[i]==tileEntity.getRedstoneWorkType()){
                 act = i;
             }
         }
@@ -204,27 +209,27 @@ public class PCGresWindowSideTab extends PCGresContainer {
 
     private static PCVec2I[] SIDE_POS = {new PCVec2I(18, 35), new PCVec2I(18, 1), new PCVec2I(18, 18), new PCVec2I(35, 35), new PCVec2I(35, 18), new PCVec2I(1, 18)};
 
-    public static PCGresWindowSideTab createIOConfigurationSideTab(ISidedInventoryPC inventory) {
-        PCGresWindowSideTab sideTab = new PC_GresWindowSideTab("Configuration", new PCGresDisplayObject(PCGres.getGresTexture("IO_CONF")));
+    public static PCGresWindowSideTab createIOConfigurationSideTab(ISidedInventoryPC inventory){
+        PCGresWindowSideTab sideTab = new PCGresWindowSideTab("Configuration", new PCGresDisplayObject(PCGres.getGresTexture("IO_CONF")));
         sideTab.setColor(new PCVec3(0.2, 1.0, 0.2));
-        sideTab.setLayout(new PC_GresLayoutVertical());
+        sideTab.setLayout(new PCGresLayoutVertical());
         PCGresFrame frame = new PCGresFrame();
         frame.setMinSize(new PCVec2I(54, 54));
         sideTab.add(frame);
-        Object[] obj = new Object[inventory.getGroupCount() + 1];
+        Object[] obj = new Object[inventory.getGroupCount()+1];
         obj[0] = PCGres.getGresTexture("NULL");
-        for (int i = 1; i < obj.length; i++) {
-            obj[i] = PCGres.getGresTexture("F" + i);
+        for(int i=1; i<obj.length; i++){
+            obj[i] = PCGres.getGresTexture("F"+i);
         }
         PCGresDisplay[] sides = new PCGresDisplay[6];
         PCGresDisplayObject dO;
         IOConfigEventListener eventListener = new IOConfigEventListener(inventory, sides);
-        for (int i = 0; i < 6; i++) {
-            if (i == PCDirection.NORTH.ordinal()) {
-                frame.add(sides[i] = new PCGresDisplay(new PCGresDisplayObject(inventory.getFrontIcon())));
-            } else {
+        for(int i=0; i<6; i++){
+            if(i==PCDirection.NORTH.ordinal()){
+                frame.add(sides[i] = new PCGresDisplay(new PCGresDisplayObject(obj)));
+            }else{
                 frame.add(sides[i] = new PCGresDisplay(dO = new PCGresDisplayObject(obj)));
-                dO.setActiveDisplayObjectIndex(inventory.getSideGroup(i) + 1);
+                dO.setActiveDisplayObjectIndex(inventory.getSideGroup(i)+1);
                 sides[i].addEventListener(eventListener);
             }
             sides[i].setLocation(SIDE_POS[i]);
@@ -233,7 +238,7 @@ public class PCGresWindowSideTab extends PCGresContainer {
         return sideTab;
     }
 
-    public static PCGresWindowSideTab createEnergySideTab(EnergyPerTick energy) {
+    public static PCGresWindowSideTab createEnergySideTab(EnergyPerTick energy){
         PCGresWindowSideTab sideTab = new PCGresWindowSideTab("Energy", new PCGresDisplayObject(PCGres.getGresTexture("Energy")));
         sideTab.setColor(new PCVec3(0.2, 0.2, 1.0));
         sideTab.setLayout(new PCGresLayoutVertical());
@@ -241,43 +246,38 @@ public class PCGresWindowSideTab extends PCGresContainer {
         return sideTab;
     }
 
-    public static class EnergyPerTick {
+    public static class EnergyPerTick{
 
         PCGresLabel label;
 
-        public void setToValue(float value) {
-            if (this.label != null) {
-                this.label.setText("Energy: " + new DecimalFormat("#.##").format(value) + " E/T");
+        public void setToValue(float value){
+            if(this.label!=null){
+                this.label.setText("Energy: "+new DecimalFormat("#.##").format(value)+" E/T");
             }
         }
 
     }
-
-    private static class RedstoneConfigEventListener implements IGresEventListener {
-
-        private PCTileEntity tileEntity;
+    private static class RedstoneConfigEventListener implements IGresEventListener{
+        private PCTileEntityAPI tileEntity;
         PCRedstoneWorkType types[];
-
-        public RedstoneConfigEventListener(PCTileEntity tileEntity, PCRedstoneWorkType types[]) {
+        public RedstoneConfigEventListener(PCTileEntityAPI tileEntity, PCRedstoneWorkType types[]){
             this.tileEntity = tileEntity;
             this.types = types;
         }
-
-      /*  @Override
+        @Override
         public void onEvent(PCGresEvent event) {
             if(event instanceof PCGresMouseButtonEvent){
                 PCGresMouseButtonEvent bEvent = (PCGresMouseButtonEvent) event;
-                if(bEvent.getEvent()== PCGresMouseMoveEvent.Event.CLICK){
+                if(bEvent.getEvent()== PCGresMouseButtonEvent.Event.CLICK){
                     PCGresDisplay disp = (PCGresDisplay) event.getComponent();
                     PCRedstoneWorkType rwt = this.types[disp.getDisplayObject().getActiveDisplayObjectIndex()];
                     this.tileEntity.setRedstoneWorkType(rwt);
                 }
             }
-        }
 
-    }*/
-/*
-    private static class IOConfigEventListener implements IGresEventListener {
+        }
+    }
+    private static class IOConfigEventListener implements IGresEventListener{
 
         private ISidedInventoryPC inventory;
         private PCGresDisplay[] sides;
@@ -291,7 +291,7 @@ public class PCGresWindowSideTab extends PCGresContainer {
         public void onEvent(PCGresEvent event) {
             if(event instanceof PCGresMouseButtonEvent){
                 PCGresMouseButtonEvent bEvent = (PCGresMouseButtonEvent) event;
-                if(bEvent.getEvent()==Event.CLICK){
+                if(bEvent.getEvent()== PCGresMouseButtonEvent.Event.CLICK){
                     for(int i=0; i<this.sides.length; i++){
                         if(this.sides[i] == bEvent.getComponent()){
                             this.inventory.setSideGroup(i, this.sides[i].getDisplayObject().getActiveDisplayObjectIndex()-1);
@@ -302,6 +302,5 @@ public class PCGresWindowSideTab extends PCGresContainer {
             }
         }
 
-    }*/
     }
 }

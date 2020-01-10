@@ -1,6 +1,14 @@
 package com.rumaruka.powercraft;
 
 
+import com.rumaruka.powercraft.api.PCTickHandler;
+import com.rumaruka.powercraft.api.PCUtils;
+import com.rumaruka.powercraft.api.PCWorldSaveData;
+import com.rumaruka.powercraft.api.dimension.PCDimension;
+import com.rumaruka.powercraft.api.dimension.PCDimensions;
+import com.rumaruka.powercraft.api.energy.PCEnergyGrid;
+import com.rumaruka.powercraft.api.gres.PCGres;
+import com.rumaruka.powercraft.api.network.PCPacketHandler;
 import com.rumaruka.powercraft.init.PCBlocks;
 import com.rumaruka.powercraft.init.PCItems;
 import com.rumaruka.powercraft.proxy.CommonProxy;
@@ -10,10 +18,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-
+import net.minecraftforge.fml.common.event.*;
 
 
 import static com.rumaruka.powercraft.ref.RefMods.*;
@@ -41,6 +46,12 @@ public class PowerCraft {
         PCItems.init();
         PCItems.registerINGAME();
 
+        PCPacketHandler.register();
+        PCTickHandler.register();
+        PCGres.register();
+        PCEnergyGrid.register();
+        PCDimensions.construct();
+
     }
     @EventHandler
     public void Init(FMLInitializationEvent e) {
@@ -51,5 +62,15 @@ public class PowerCraft {
     public void PostInit(FMLPostInitializationEvent e) {
         proxy.postInit(e);
 
+    }
+
+    @EventHandler
+    public void serverStart(FMLServerAboutToStartEvent e){
+
+        PCPacketHandler.setupPackets();
+    }
+    @EventHandler
+    public void serverStop(FMLServerStoppingEvent E){
+        PCWorldSaveData.onServerStopping();
     }
 }

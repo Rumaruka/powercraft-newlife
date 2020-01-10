@@ -1,6 +1,7 @@
 package com.rumaruka.powercraft.api.renderer;
 
 
+import com.rumaruka.powercraft.api.entity.IEntityPC;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;

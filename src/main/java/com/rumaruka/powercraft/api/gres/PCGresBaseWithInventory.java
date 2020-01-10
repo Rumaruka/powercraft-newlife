@@ -1,9 +1,12 @@
 package com.rumaruka.powercraft.api.gres;
 
+import com.rumaruka.powercraft.api.PCUtils;
 import com.rumaruka.powercraft.api.gres.slot.PCSlot;
 import com.rumaruka.powercraft.api.inventory.IInventoryPC;
 import com.rumaruka.powercraft.api.inventory.IInventorySizeOverriderPC;
 import com.rumaruka.powercraft.api.network.PCPacketHandler;
+import com.rumaruka.powercraft.api.network.packet.PCPacketSetSlot;
+import com.rumaruka.powercraft.api.network.packet.PCPacketWindowItems;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -37,7 +40,7 @@ public class PCGresBaseWithInventory extends Container implements IInventoryPC, 
     private final Set<Slot>dragSlots = new HashSet<Slot>();
 
     public PCGresBaseWithInventory(EntityPlayer player,IInventory inventory){
-        SETTING_OK= PCUtils.isServer();
+
         this.player=player;
         this.inventory=inventory;
 
@@ -78,6 +81,12 @@ public class PCGresBaseWithInventory extends Container implements IInventoryPC, 
         return new PCSlot(this.inventory,i);
     }
 
+    public void sendProgressBarUpdate(int key, int value) {
+
+        if (this.player instanceof EntityPlayerMP) {
+            ((EntityPlayerMP) this.player).sendWindowProperty(this, key, value);
+        }
+    }
 
 
     @Override
@@ -94,8 +103,8 @@ public class PCGresBaseWithInventory extends Container implements IInventoryPC, 
                 throw new IllegalArgumentException("Listener already listening");
             }
             this.listeners.add(listener);
-            PCPacketHandler.sendTo(new PCPacketWindowItems(this.windowId, getInventory()), (EntityPlayerMP)crafting);
-            PCPacketHandler.sendTo(new PCPacketSetSlot(-1, -1, ((EntityPlayerMP)listener).inventory.getItemStack()), (EntityPlayerMP)crafting);
+            PCPacketHandler.sendTo(new PCPacketWindowItems(this.windowId, getInventory()), (EntityPlayerMP) player);
+            PCPacketHandler.sendTo(new PCPacketSetSlot(-1, -1, ((EntityPlayerMP)listener).inventory.getItemStack()), (EntityPlayerMP)player);
             listener.sendAllContents(this, this.getInventory());
             this.detectAndSendChanges();
         }else{

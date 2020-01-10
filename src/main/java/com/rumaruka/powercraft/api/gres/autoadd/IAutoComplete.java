@@ -1,6 +1,9 @@
 package com.rumaruka.powercraft.api.gres.autoadd;
 
 import com.rumaruka.powercraft.api.gres.PCGresComponent;
+import com.rumaruka.powercraft.api.gres.document.IGresDocInfoCollector;
+import com.rumaruka.powercraft.api.gres.document.PCGresDocument;
+import com.rumaruka.powercraft.api.gres.document.PCGresDocumentLine;
 
 public interface IAutoComplete {
 
@@ -8,5 +11,5 @@ public interface IAutoComplete {
 
      void makeComplete(PCGresComponent component, PCGresDocument document, PCGresDocumentLine line, int x, PCAutoCompleteDisplay info);
 
-     PCGresDocInfoCollector getInfoCollector();
+     IGresDocInfoCollector getInfoCollector();
 }

@@ -1,6 +1,5 @@
 package com.rumaruka.powercraft.api.renderer;
 
-import com.rumaruka.powercraft.api.PCLogger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
@@ -15,9 +14,6 @@ public class PCOpenGL {
 
     private static Stack<DoubleBuffer> matrixStack = new Stack<DoubleBuffer>();
 
-    private PCOpenGL(){
-        PCUtils.staticClassConstructor();
-    }
 
     public static void pushMatrix(){
         DoubleBuffer db = BufferUtils.createDoubleBuffer(16);
@@ -54,7 +50,6 @@ public class PCOpenGL {
                 System.out.println("OpenGL Error "+ GLU.gluErrorString(error)+" again in "+ where);
             }else{
                 allreadyThrown.add(where);
-                PCLogger.severe("OpenGL Error %s in %s", GLU.gluErrorString(error), where);
             }
         }
     }

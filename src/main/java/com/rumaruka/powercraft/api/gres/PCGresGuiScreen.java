@@ -84,7 +84,7 @@ public class PCGresGuiScreen extends GuiScreen {
 
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
-        this.guiHandler.eventKeyTyped(key, keyCode, Keyboard.isRepeatEvent());
+        this.guiHandler.eventKeyTyped(typedChar, keyCode, Keyboard.isRepeatEvent());
     }
 
     @Override

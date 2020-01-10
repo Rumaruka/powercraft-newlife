@@ -25,7 +25,7 @@ public class PCTickHandler {
     private static final List<IPlayerTickHandler> playerTickHandlers = new ArrayList<IPlayerTickHandler>();
     private static final List<IRenderTickHandler> renderTickHandlers = new ArrayList<IRenderTickHandler>();
 
-    static void register(){
+    public static void register(){
         PCSecurity.allowedCaller("PC_TickHandler.register()", PowerCraft.class);
         FMLCommonHandler.instance().bus().register(INSTANCE);
     }

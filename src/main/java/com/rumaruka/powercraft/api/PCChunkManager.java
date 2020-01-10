@@ -93,7 +93,6 @@ public class PCChunkManager implements LoadingCallback {
                     return ticket;
                 }
 
-            PCLogger.severe("No more Chunkloader Tickets :/");
             return null;
         }
 

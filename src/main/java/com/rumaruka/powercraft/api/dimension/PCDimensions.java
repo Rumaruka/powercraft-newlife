@@ -3,7 +3,6 @@ package com.rumaruka.powercraft.api.dimension;
 import com.rumaruka.powercraft.PowerCraft;
 
 import com.rumaruka.powercraft.api.PCImmutableList;
-import com.rumaruka.powercraft.api.PCLogger;
 import com.rumaruka.powercraft.api.reflect.PCSecurity;
 
 import java.util.ArrayList;
@@ -20,9 +19,7 @@ public class PCDimensions {
 
     static void addDimensions(PCDimension dimension) {
         if(done){
-            PCLogger.severe("A dimension want to register while startup is done");
         }else{
-            PCLogger.info("Dimension-ADD: %s", dimension);
             dimensions.add(dimension);
             providers.put(dimension.getWorldProvider(), dimension);
         }
@@ -37,7 +34,6 @@ public class PCDimensions {
         if(!done){
             done = true;
             for(PCDimension dimension:dimensions){
-                PCLogger.info("CONSTRUCT: %s", dimension);
                 dimension.construct();
             }
         }

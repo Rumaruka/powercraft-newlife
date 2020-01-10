@@ -1,19 +1,15 @@
 package com.rumaruka.powercraft.api.network;
 
-import com.rumaruka.powercraft.PCSide;
-import com.rumaruka.powercraft.api.PCLogger;
+import com.rumaruka.powercraft.api.PCSide;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTSizeTracker;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetHandler;
-import net.minecraft.network.PacketBuffer;
 
 import java.io.*;
 
@@ -46,7 +42,6 @@ public abstract class PCPacket {
 
         } catch (IOException e) {
             e.printStackTrace();
-            PCLogger.severe("Error while compressing NBTTag");
         }
     }
 
@@ -57,7 +52,6 @@ public abstract class PCPacket {
             return CompressedStreamTools.readCompressed(new ByteBufInputStream(buf));
         } catch (IOException e) {
             e.printStackTrace();
-            PCLogger.severe("Error while decompressing NBTTag");
         }
         return new NBTTagCompound();
     }

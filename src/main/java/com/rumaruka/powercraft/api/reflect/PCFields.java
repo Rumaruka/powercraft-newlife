@@ -17,9 +17,7 @@ import java.util.Map;
 
 public class PCFields {
 
-    private PCFields(){
-        PCUtils.staticClassConstructor();
-    }
+
     public static final int INDEX_NetHandlerPlayServer_field_147372_n = 13;
     public static final int INDEX_EntityLivingBase_recentlyHit = 31;
     public static final int INDEX_EntityXPOrb_closestPlayer = 5;

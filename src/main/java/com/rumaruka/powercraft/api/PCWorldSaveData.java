@@ -21,7 +21,7 @@ public abstract class PCWorldSaveData extends WorldSavedData {
         //
     }
 
-    static void onServerStopping(){
+    public static void onServerStopping(){
         for(PCWorldSaveData data:datas){
             data.cleanup();
         }

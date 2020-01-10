@@ -1,7 +1,5 @@
 package com.rumaruka.powercraft.api.reflect;
 
-import com.rumaruka.powercraft.api.PCLogger;
-
 public class PCSecurity {
 
     public static boolean allowedCaller(String funktion, Class<?>... allowedCallers){
@@ -11,7 +9,6 @@ public class PCSecurity {
                 return true;
             }
         }
-        PCLogger.severe("Security Exception %s try to call a non allowed function: %s", caller, funktion);
         return false;
     }
 
@@ -32,7 +29,6 @@ public class PCSecurity {
                 return true;
             }
         }
-        PCLogger.severe("Security Exception %s try to call a non allowed function: %s", caller, funktion);
         return false;
     }
 
@@ -46,7 +42,5 @@ public class PCSecurity {
         return false;
     }
 
-    private PCSecurity() {
-        PCUtils.staticClassConstructor();
-    }
+
 }

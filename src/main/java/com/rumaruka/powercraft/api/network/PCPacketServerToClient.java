@@ -1,8 +1,7 @@
 package com.rumaruka.powercraft.api.network;
 
-import com.rumaruka.powercraft.PCSide;
+import com.rumaruka.powercraft.api.PCSide;
 import com.rumaruka.powercraft.api.PCClientUtils;
-import com.rumaruka.powercraft.api.PCLogger;
 
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,7 +25,6 @@ public abstract class PCPacketServerToClient extends PCPacketServerToClientBase{
 
     private static boolean checkSide(PCSide side){
         if(side !=PCSide.CLIENT){
-            PCLogger.severe("A server to client packet can't run on server");
             return false;
         }
         return true;

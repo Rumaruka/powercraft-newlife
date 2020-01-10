@@ -10,7 +10,7 @@ public class PCGresTooltipGetEvent extends PCGresConsumeableEvent {
 
     private List<String>tooltip;
 
-    protected PCGresTooltipGetEvent(PCGresComponent c,List<String> tooltip) {
+    public PCGresTooltipGetEvent(PCGresComponent c, List<String> tooltip) {
         super(c);
         this.tooltip=tooltip;
     }

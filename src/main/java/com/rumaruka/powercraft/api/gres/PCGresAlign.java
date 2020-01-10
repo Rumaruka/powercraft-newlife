@@ -23,7 +23,4 @@ public final class PCGresAlign {
         SELV, BIGGEST;
     }
 
-    private PCGresAlign(){
-        PCUtils.staticClassConstructor();
-    }
 }

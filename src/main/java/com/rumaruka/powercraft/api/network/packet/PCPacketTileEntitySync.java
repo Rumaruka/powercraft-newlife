@@ -1,9 +1,10 @@
 package com.rumaruka.powercraft.api.network.packet;
 
 import com.rumaruka.powercraft.api.PCUtils;
-import com.rumaruka.powercraft.api.block.PCTileEntity;
+
 import com.rumaruka.powercraft.api.network.PCPacket;
 import com.rumaruka.powercraft.api.network.PCPacketServerToClient;
+import com.rumaruka.powercraft.api.tile.PCTileEntityAPI;
 import com.rumaruka.powercraft.init.PCTileEntity;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.network.NetHandlerPlayClient;
@@ -22,7 +23,7 @@ public class PCPacketTileEntitySync extends PCPacketServerToClient {
     public PCPacketTileEntitySync(){
 
     }
-    public PCPacketTileEntitySync(PCTileEntity tileEntity, NBTTagCompound compound){
+    public PCPacketTileEntitySync(PCTileEntityAPI tileEntity, NBTTagCompound compound){
         this.x=tileEntity.getPos().getX();
         this.y=tileEntity.getPos().getY();
         this.z=tileEntity.getPos().getZ();
@@ -33,7 +34,7 @@ public class PCPacketTileEntitySync extends PCPacketServerToClient {
     @Override
     protected PCPacket doAndReply(NetHandlerPlayClient playClient, World world, EntityPlayer player) {
 
-        PCTileEntity te = PCUtils.getTileEntity(world,new BlockPos(this.x,this.y,this.z),PCTileEntity.class);
+        PCTileEntityAPI te =  PCUtils.getTileEntity(world,this.x,this.y,this.z,PCTileEntityAPI.class);
 
         if(te!=null){
             te.applySync(this.compound);

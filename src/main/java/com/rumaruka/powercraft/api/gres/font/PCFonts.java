@@ -1,6 +1,7 @@
 package com.rumaruka.powercraft.api.gres.font;
 
 
+import com.rumaruka.powercraft.PowerCraft;
 import com.rumaruka.powercraft.api.*;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.util.ResourceLocation;
@@ -16,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @SideOnly(Side.CLIENT)
-public class PCFonts implements PCResourceReloadListener.IResourceReloadLisener {
+public class PCFonts implements PCResourceReloadListener.IResourceReloadListener {
 
     private static List<PCFontTexture> fonts = new ArrayList<PCFontTexture>();
     private static HashMap<PCFontData, PCFontTexture> fontData = new HashMap<PCFontData, PCFontTexture>();
@@ -81,18 +82,15 @@ public class PCFonts implements PCResourceReloadListener.IResourceReloadLisener 
         if(font!=null)
             return font;
         if(name.equalsIgnoreCase("Minecraftia")){
-            PCLogger.severe("Default font not found, fallback to "+Font.SANS_SERIF);
             return loadFont(Font.SANS_SERIF);
         }else if(name.equalsIgnoreCase(Font.SANS_SERIF)){
-            PCLogger.severe(Font.SANS_SERIF+" font not found");
             return null;
         }
-        PCLogger.severe("%s font not found, fallback to Minecraftia", name);
         return loadFont("Minecraftia");
     }
 
     private static Font loadFromResourcePack(String name){
-        ResourceLocation resourceLocation = PCUtils.getResourceLocation(PCApi.instance, "fonts/"+name+".ttf");
+        ResourceLocation resourceLocation = PCUtils.getResourceLocation(PowerCraft.instance, "fonts/"+name+".ttf");
         InputStream inputstream = null;
         Font font = null;
         try {
@@ -101,7 +99,6 @@ public class PCFonts implements PCResourceReloadListener.IResourceReloadLisener 
             font = Font.createFont(Font.TRUETYPE_FONT, inputstream);
             inputstream.close();
         } catch(FileNotFoundException e){
-            PCLogger.warning("Font %s not found in resource pack", name);
             return null;
         } catch (Exception e) { // Do not use Java 1.7, use Java 1.6
             throw new RuntimeException(e); // Should we create a runtime Error and crash report?

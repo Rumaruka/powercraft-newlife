@@ -9,9 +9,9 @@ import java.util.List;
 
 import javax.management.InstanceAlreadyExistsException;
 
-import com.rumaruka.powercraft.PCSide;
-import com.rumaruka.powercraft.api.inventory.PCInventoryUtils;
-import com.rumaruka.powercraft.api.recipe.RecipeHelper;
+import com.rumaruka.powercraft.PowerCraft;
+import com.rumaruka.powercraft.init.PCTileEntity;
+import com.rumaruka.powercraft.ref.RefMods;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -27,14 +27,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 
-import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-
-import net.minecraftforge.oredict.ShapedOreRecipe;
-import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 
 public class PCUtils {
@@ -81,7 +78,10 @@ public class PCUtils {
     public static <T> T getBlock(IBlockAccess world, float x, float y, float z, Class<T> c) {
         return as(world.getBlockState(new BlockPos(x, y, z)), c);
     }
+    public static ResourceLocation getResourceLocation(PowerCraft main, String file){
+        return new ResourceLocation(RefMods.MODID,file);
 
+    }
     public static IBlockState getBlock(IBlockAccess world, BlockPos pos) {
         return getBlock(world, pos);
     }
@@ -196,9 +196,7 @@ public class PCUtils {
 
     public static void notifyBlockOfNeighborChange(World world, int x, int y, int z,int x1, int y1, int z1, Block neightbor) {
         Block block = (Block) getBlock(world, x, y, z);
-        if (block != null) {
-            ((IBlockState) block).neighborChanged(world, new BlockPos(x, y, z), neightbor,new BlockPos(x1,y1,z1));
-        }
+        ((IBlockState) block).neighborChanged(world, new BlockPos(x, y, z), neightbor,new BlockPos(x1,y1,z1));
     }
 
 
@@ -209,30 +207,16 @@ public class PCUtils {
 
 
 
-    public static PCSide getSide() {
-        return INSTANCE.iGetSide();
-    }
+
+
 
     @SuppressWarnings("static-method")
     PCSide iGetSide() {
         return PCSide.SERVER;
     }
 
-    static void markThreadAsServer() {
-        INSTANCE.iMarkThreadAsServer();
-    }
 
-    void iMarkThreadAsServer() {
-        //
-    }
 
-    public static boolean isServer() {
-        return getSide() == PCSide.SERVER;
-    }
-
-    public static boolean isClient() {
-        return getSide() == PCSide.CLIENT;
-    }
 
 
 
@@ -383,7 +367,6 @@ public class PCUtils {
     public static void notImplementedYet(String what){
         if(!messages.contains(what)){
             messages.add(what);
-            PCLogger.severe("%s not implemented yet", what);
         }
     }
 
@@ -421,8 +404,6 @@ public class PCUtils {
         PCVec3 lookDir = new PCVec3(x, y, z);
         return lookDir;
     }
-
-
 
 
     @SuppressWarnings("unchecked")
